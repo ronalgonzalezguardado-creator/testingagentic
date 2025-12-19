@@ -4,7 +4,7 @@ Quickstart Agentic Project - A simple agent with LLM reasoning and tool executio
 """
 import os
 import sys
-from typing import Dict, Any, List, Callable
+from typing import Dict, Any, List, Callable, Optional, Tuple
 
 
 # Simple Tools
@@ -82,6 +82,13 @@ class SimpleAgent:
         Args:
             model: LLM model to use (default: gpt-3.5-turbo)
         """
+        # Load environment variables from .env file if available
+        try:
+            from dotenv import load_dotenv
+            load_dotenv()
+        except ImportError:
+            pass  # python-dotenv not installed, continue with system env vars
+        
         self.model = model
         self.tools = Tools()
         self.available_tools = {
@@ -153,7 +160,7 @@ class SimpleAgent:
             except Exception as e:
                 return f"Error calling LLM: {str(e)}"
     
-    def _parse_tool_call(self, response: str) -> tuple[str, str] | None:
+    def _parse_tool_call(self, response: str) -> Optional[Tuple[str, str]]:
         """
         Parse tool call from LLM response.
         

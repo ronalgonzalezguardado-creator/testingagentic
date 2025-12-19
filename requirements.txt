@@ -1,3 +1,6 @@
 # Minimal dependencies for the quickstart agentic project
 # OpenAI API client (optional - project works in demo mode without it)
 openai>=1.0.0
+
+# python-dotenv for loading .env files (optional but recommended)
+python-dotenv>=1.0.0
