@@ -14,7 +14,7 @@ class Tools:
     @staticmethod
     def calculator(operation: str) -> str:
         """
-        Simple calculator tool that evaluates mathematical expressions.
+        Simple calculator tool that evaluates mathematical expressions safely.
         
         Args:
             operation: Mathematical expression to evaluate (e.g., "2 + 2", "10 * 5")
@@ -22,13 +22,38 @@ class Tools:
         Returns:
             Result of the calculation as a string
         """
+        import ast
+        import operator
+        
+        # Supported operators
+        ops = {
+            ast.Add: operator.add,
+            ast.Sub: operator.sub,
+            ast.Mult: operator.mul,
+            ast.Div: operator.truediv,
+            ast.Mod: operator.mod,
+            ast.Pow: operator.pow,
+            ast.USub: operator.neg,
+        }
+        
+        def eval_expr(node):
+            """Safely evaluate an AST node."""
+            if isinstance(node, ast.Constant):  # Python 3.8+
+                return node.value
+            elif isinstance(node, ast.BinOp):
+                left = eval_expr(node.left)
+                right = eval_expr(node.right)
+                return ops[type(node.op)](left, right)
+            elif isinstance(node, ast.UnaryOp):
+                operand = eval_expr(node.operand)
+                return ops[type(node.op)](operand)
+            else:
+                raise ValueError(f"Unsupported operation: {type(node).__name__}")
+        
         try:
-            # Safety: Only allow basic math operations
-            allowed_chars = set("0123456789+-*/(). ")
-            if not all(c in allowed_chars for c in operation):
-                return "Error: Invalid characters in expression"
-            
-            result = eval(operation)
+            # Parse the expression into an AST
+            tree = ast.parse(operation, mode='eval')
+            result = eval_expr(tree.body)
             return f"Result: {result}"
         except Exception as e:
             return f"Error: {str(e)}"
