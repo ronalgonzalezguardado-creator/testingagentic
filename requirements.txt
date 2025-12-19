@@ -1,0 +1,3 @@
+# Minimal dependencies for the quickstart agentic project
+# OpenAI API client (optional - project works in demo mode without it)
+openai>=1.0.0
